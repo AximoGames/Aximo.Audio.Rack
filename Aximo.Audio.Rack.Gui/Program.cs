@@ -5,7 +5,7 @@ using Aximo.Engine;
 using OpenToolkit.Mathematics;
 using OpenToolkit.Windowing.Common;
 
-namespace Aximo.AxDemo
+namespace Aximo.Audio.Rack.Gui
 {
     internal class Program
     {

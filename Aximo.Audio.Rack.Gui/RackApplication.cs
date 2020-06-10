@@ -9,12 +9,25 @@ using Aximo.Engine.Components.UI;
 using OpenToolkit.Mathematics;
 using OpenToolkit.Windowing.Common;
 
-namespace Aximo.AxDemo
+namespace Aximo.Audio.Rack.Gui
 {
     public class RackApplication : Application
     {
+        public static Matrix4 BoardTranslationMatrix = Matrix4.CreateScale(1, -1, 1);
+
         protected override void SetupScene()
         {
+            var camSize = new Vector2(9 * RenderContext.ScreenAspectRatio, 9);
+
+            RenderContext.Camera = new OrthographicCamera(new Vector3(4.5f + ((camSize.X - camSize.Y) / 2f) - 0.5f, -4.5f + 0.5f, 25))
+            {
+                Size = camSize,
+                NearPlane = 1f,
+                FarPlane = 100.0f,
+                Facing = (float)Math.PI / 2,
+                Pitch = -((float)(Math.PI / 2) - 0.00001f),
+            };
+
             SceneContext.AddActor(new Actor(new CubeComponent()
             {
                 Name = "Ground",
@@ -67,6 +80,15 @@ namespace Aximo.AxDemo
                 RelativeScale = new Vector3(1),
                 RelativeTranslation = new Vector3(0, 0, 0.5f),
             }));
+
+            ModuleComponent mod;
+            SceneContext.AddActor(new Actor(mod = new ModuleComponent(new Vector2i(200, 200))
+            {
+                Name = "Mod1",
+                RelativeTranslation = new Vector3(2, 2, 0.05f),
+                RelativeScale = new Vector3(4.0f, 6.0f, 0.1f),
+            }));
+            mod.AddKnob();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -78,5 +100,6 @@ namespace Aximo.AxDemo
                     cursor.RelativeTranslation = new Vector3(CurrentMouseWorldPosition.X, CurrentMouseWorldPosition.Y, cursor.RelativeTranslation.Z);
             }
         }
+
     }
 }
