@@ -15,6 +15,13 @@ namespace Aximo.Engine.Audio
         Toggle,
     }
 
+    public enum AudioParameterScale
+    {
+        Linear,
+        Exp,
+        Log,
+    }
+
     public class AudioParameter
     {
         public AudioModule Module;
@@ -24,6 +31,68 @@ namespace Aximo.Engine.Audio
         public float Value;
         public AudioParameterType Type;
 
+        public AudioParameterScale ScaleType;
+        public float DisplayMultiplier;
+        public float DisplayOffset;
+        public float DisplayBase;
+
+        public AudioParameter SetDisplayRangeLinear(float displayMultiplier, float displayOffset = 0)
+        {
+            ScaleType = AudioParameterScale.Linear;
+            DisplayMultiplier = displayMultiplier;
+            DisplayOffset = displayOffset;
+            return this;
+        }
+
+        public AudioParameter SetDisplayRangeExp(float displayBase, float displayMultiplier, float displayOffset = 0)
+        {
+            ScaleType = AudioParameterScale.Exp;
+            DisplayBase = displayBase;
+            DisplayMultiplier = displayMultiplier;
+            DisplayOffset = displayOffset;
+            return this;
+        }
+
+        public AudioParameter SetDisplayRangeLog(float displayBase, float displayMultiplier, float displayOffset = 0)
+        {
+            ScaleType = AudioParameterScale.Log;
+            DisplayBase = displayBase;
+            DisplayMultiplier = displayMultiplier;
+            DisplayOffset = displayOffset;
+            return this;
+        }
+
+        public float GetDisplayValue()
+        {
+            float v = GetValue();
+
+            if (ScaleType == AudioParameterScale.Log)
+                v = MathF.Log(v) / MathF.Log(DisplayBase);
+            else if (ScaleType == AudioParameterScale.Exp)
+                v = MathF.Pow(DisplayBase, v);
+
+            return (v * DisplayMultiplier) + DisplayOffset;
+        }
+
+        public void SetDisplayValue(float displayValue)
+        {
+            float v = displayValue - DisplayOffset;
+
+            if (DisplayMultiplier == 0f)
+                v = 0f;
+            else
+                v /= DisplayMultiplier;
+
+            if (DisplayBase != 0f)
+            {
+                if (ScaleType == AudioParameterScale.Log)
+                    v = MathF.Pow(DisplayBase, v);
+                else if (ScaleType == AudioParameterScale.Exp)
+                    v = MathF.Log(v) / MathF.Log(DisplayBase);
+            }
+
+            SetValue(v);
+        }
 
         public bool IsToggleUp => Value >= Max;
         public bool IsToggleDown => Value <= Min;
@@ -74,6 +143,27 @@ namespace Aximo.Engine.Audio
                 return GetScaledMappedValue(input.GetVoltage() / 5f, toMin, toMax);
             else
                 return GetMappedValue(toMin, toMax);
+        }
+
+        public float GetUnipolarMappedValue(Port input, float toMin, float toMax)
+        {
+            if (input.IsConnected)
+                return GetScaledMappedValue(input.GetVoltage() / 10f, toMin, toMax);
+            else
+                return GetMappedValue(toMin, toMax);
+        }
+
+        public float GetUnipolarValue(float scale)
+        {
+            return Value * scale;
+        }
+
+        public float GetUnipolarValue(Port input)
+        {
+            if (input.IsConnected)
+                return Value * (input.GetVoltage() / 10f);
+            return
+                Value;
         }
     }
 }

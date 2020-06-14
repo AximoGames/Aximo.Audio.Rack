@@ -26,11 +26,11 @@ namespace Aximo.Engine.Audio
         {
             Name = "VCO";
 
-            FreqParam = ConfigureParameter("Freq", 0, AudioParameterType.Slider, 0, 1, AxMath.Map(vcoDefault, vcoMin, vcoMax, 0, 1));
-            LfoParam = ConfigureParameter("LFO", 1, AudioParameterType.Toggle, 0, 1, 0);
+            FreqParam = ConfigureParameter(0, "Freq", AudioParameterType.Slider, 0, 1, AxMath.Map(vcoDefault, vcoMin, vcoMax, 0, 1));
+            LfoParam = ConfigureParameter(1, "LFO", AudioParameterType.Toggle, 0, 1, 0);
 
-            ConfigureInput("FreqVC", 0);
-            ConfigureOutput("Out", 0);
+            ConfigureInput(0, "FreqVC");
+            ConfigureOutput(0, "Out");
 
             SinOut = Outputs[0];
         }

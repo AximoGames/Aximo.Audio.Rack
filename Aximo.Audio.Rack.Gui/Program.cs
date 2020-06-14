@@ -13,7 +13,7 @@ namespace Aximo.Audio.Rack.Gui
         {
             var config = new ApplicationConfig
             {
-                WindowTitle = "AxEngineDemo",
+                WindowTitle = "Aximo Audio Rack",
                 WindowSize = new Vector2i(800, 600),
                 WindowBorder = WindowBorder.Resizable,
                 IsMultiThreaded = true,

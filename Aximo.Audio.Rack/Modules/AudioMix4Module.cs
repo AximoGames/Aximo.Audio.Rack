@@ -17,22 +17,22 @@ namespace Aximo.Engine.Audio
         {
             Name = "Mix4";
 
-            ConfigureParameter("Volume1", 0, AudioParameterType.Slider, 0, 1, DefaultVolume);
-            ConfigureParameter("Volume2", 1, AudioParameterType.Slider, 0, 1, DefaultVolume);
-            ConfigureParameter("Volume3", 2, AudioParameterType.Slider, 0, 1, DefaultVolume);
-            ConfigureParameter("Volume4", 3, AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter(0, "Volume1", AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter(1, "Volume2", AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter(2, "Volume3", AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter(3, "Volume4", AudioParameterType.Slider, 0, 1, DefaultVolume);
 
-            ConfigureInput("Left1", 0);
-            ConfigureInput("Right1", 1);
-            ConfigureInput("Left2", 2);
-            ConfigureInput("Right2", 3);
-            ConfigureInput("Left3", 4);
-            ConfigureInput("Right3", 5);
-            ConfigureInput("Left4", 6);
-            ConfigureInput("Right4", 7);
+            ConfigureInput(0, "Left1");
+            ConfigureInput(1, "Right1");
+            ConfigureInput(2, "Left2");
+            ConfigureInput(3, "Right2");
+            ConfigureInput(4, "Left3");
+            ConfigureInput(5, "Right3");
+            ConfigureInput(6, "Left4");
+            ConfigureInput(7, "Right4");
 
-            ConfigureOutput("Left", 0);
-            ConfigureOutput("Right", 1);
+            ConfigureOutput(0, "Left");
+            ConfigureOutput(1, "Right");
 
             InputChannels = new Port[] { Inputs[0], Inputs[1], Inputs[2], Inputs[3], Inputs[4], Inputs[5], Inputs[6], Inputs[7] };
             OutputChannels = new Port[] { Outputs[0], Outputs[1] };

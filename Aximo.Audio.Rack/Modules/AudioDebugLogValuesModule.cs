@@ -27,7 +27,7 @@ namespace Aximo.Engine.Audio
         public AudioDebugLogValuesModule()
         {
             Name = "Debug Values";
-            ConfigureInput("Probe", 0);
+            ConfigureInput(0, "Probe");
             InputChannels = new Port[] { Inputs[0] };
         }
 

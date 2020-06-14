@@ -23,7 +23,7 @@ namespace Aximo.Audio.Rack.Gui
             Param = param;
             Margin = new UIAnchors();
             Padding = new UIAnchors();
-            Border = new UIAnchors(1);
+            Border = new UIAnchors(0.25f);
             BorderRadius = 0;
 
             Button.BorderRadius = 0;

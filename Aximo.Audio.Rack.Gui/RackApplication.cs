@@ -97,6 +97,8 @@ namespace Aximo.Audio.Rack.Gui
                 inMod2.Play();
             };
 
+            var ampMod = new AudioAmplifierModule();
+            var envMod = new AudioADSRModule();
             var vcoMod = new AudioVCOModule();
             var vcoMod2 = new AudioVCOModule();
 
@@ -112,6 +114,8 @@ namespace Aximo.Audio.Rack.Gui
             Rack.AddModule(mixMod);
             Rack.AddModule(vcoMod);
             Rack.AddModule(vcoMod2);
+            Rack.AddModule(ampMod);
+            Rack.AddModule(envMod);
 
             Rack.AddCable(inMod.GetOutput("Left"), mixMod.GetInput("Left1"));
             Rack.AddCable(inMod.GetOutput("Right"), mixMod.GetInput("Right1"));

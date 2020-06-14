@@ -24,8 +24,8 @@ namespace Aximo.Audio.Rack.Gui
         public PortComponent(Port port)
         {
             Port = port;
-            Border = new UIAnchors(1);
-            OuterSize = new Vector2(5, 5);
+            Border = new UIAnchors(0.25f);
+            OuterSize = new Vector2(3, 3);
         }
 
         public override void OnMouseEnter(MouseMoveArgs e)

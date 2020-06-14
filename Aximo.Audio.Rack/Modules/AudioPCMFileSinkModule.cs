@@ -18,9 +18,9 @@ namespace Aximo.Engine.Audio
         public AudioPCMFileSinkModule()
         {
             Name = "PCM Sink";
-            ConfigureInput("Left", 0);
-            ConfigureInput("Right", 1);
-            ConfigureInput("Gate", 2);
+            ConfigureInput(0, "Left");
+            ConfigureInput(1, "Right");
+            ConfigureInput(2, "Gate");
             InputChannels = new Port[] { Inputs[0], Inputs[1] };
         }
 

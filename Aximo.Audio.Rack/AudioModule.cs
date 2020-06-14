@@ -22,7 +22,7 @@ namespace Aximo.Engine.Audio
 
         public abstract void Process(AudioProcessArgs e);
 
-        protected Port ConfigureOutput(string name, int i = 0)
+        protected Port ConfigureOutput(int i, string name)
         {
             Outputs = Outputs.EnsureSize(i + 1);
             if (Outputs[i] == null)
@@ -33,7 +33,7 @@ namespace Aximo.Engine.Audio
             return port;
         }
 
-        protected Port ConfigureInput(string name, int i = 0)
+        protected Port ConfigureInput(int i, string name)
         {
             Inputs = Inputs.EnsureSize(i + 1);
             if (Inputs[i] == null)
@@ -44,7 +44,9 @@ namespace Aximo.Engine.Audio
             return port;
         }
 
-        protected AudioParameter ConfigureParameter(string name, int i, AudioParameterType type, float min, float max, float? value)
+
+
+        protected AudioParameter ConfigureParameter(int i, string name, AudioParameterType type, float min, float max, float? value)
         {
             Parameters = Parameters.EnsureSize(i + 1);
             if (Parameters[i] == null)

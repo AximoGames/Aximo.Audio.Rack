@@ -9,6 +9,7 @@ namespace Aximo.Engine.Audio
     public class AudioAmplifierModule : AudioModule
     {
         private Port[] InputChannels;
+        private Port VolumeVC;
         private Port[] OutputChannels;
 
         private AudioParameter VolumeParam;
@@ -17,12 +18,14 @@ namespace Aximo.Engine.Audio
         {
             Name = "Amplifier";
 
-            VolumeParam = ConfigureParameter("Volume", 0, AudioParameterType.Slider, 0, 1, 1);
+            VolumeParam = ConfigureParameter(0, "Volume", AudioParameterType.Slider, 0, 1, 1);
 
-            ConfigureInput("Left", 0);
-            ConfigureInput("Right", 1);
-            ConfigureOutput("Left", 0);
-            ConfigureOutput("Right", 1);
+            ConfigureInput(0, "Left");
+            ConfigureInput(1, "Right");
+            VolumeVC = ConfigureInput(2, "VolumeVC");
+
+            ConfigureOutput(0, "Left");
+            ConfigureOutput(1, "Right");
 
             InputChannels = new Port[] { Inputs[0], Inputs[1] };
             OutputChannels = new Port[] { Outputs[0], Outputs[1] };
@@ -35,7 +38,7 @@ namespace Aximo.Engine.Audio
             var len = InputChannels.Length;
             var outputChannels = OutputChannels;
 
-            var volume = VolumeParam.Value;
+            var volume = VolumeParam.GetUnipolarValue(VolumeVC);
 
             for (var i = 0; i < len; i++)
                 outputChannels[i].SetVoltage(inputChannels[i].GetVoltage() * volume);

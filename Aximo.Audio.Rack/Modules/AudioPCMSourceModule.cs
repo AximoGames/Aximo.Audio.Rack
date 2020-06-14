@@ -40,10 +40,10 @@ namespace Aximo.Engine.Audio
         public AudioPCMSourceModule()
         {
             Name = "PCM Source";
-            ConfigureOutput("Left", 0);
-            ConfigureOutput("Right", 1);
-            ConfigureOutput("Gate", 2);
-            ConfigureOutput("Progress", 3);
+            ConfigureOutput(0, "Left");
+            ConfigureOutput(1, "Right");
+            ConfigureOutput(2, "Gate");
+            ConfigureOutput(3, "Progress");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]

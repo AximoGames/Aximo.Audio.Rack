@@ -29,7 +29,7 @@ namespace Aximo.Audio.Rack.Gui
             Margin = UIAnchors.Zero;
             Padding = UIAnchors.Zero;
             Border = new UIAnchors(1);
-            Size = new Vector2(width, ModuleHeight);
+            OuterSize = new Vector2(width, ModuleHeight);
             Init();
         }
 
@@ -37,10 +37,10 @@ namespace Aximo.Audio.Rack.Gui
         {
             AddComponent(new UILabelComponent(Module.Name)
             {
-                Size = new Vector2(Size.X, 5),
-                FontSize = 1.5f,
+                Size = new Vector2(Size.X, 2),
+                FontSize = 1.25f,
             });
-            CurrentLocation.Y += 5;
+            CurrentLocation.Y += 2;
 
             foreach (var port in Module.Inputs)
             {
@@ -76,9 +76,8 @@ namespace Aximo.Audio.Rack.Gui
         {
             var comp = new AudioSliderComponent(param);
             AddComponent(comp);
-            //comp.Size = new Vector2(400, 50);
-            comp.SliderThickness = 4f;
-            comp.OuterSize = new Vector2(Size.X, 5);
+            comp.SliderThickness = 2f;
+            comp.OuterSize = new Vector2(Size.X, 3);
             if (CurrentLocation.X > 0)
             {
                 CurrentLocation.X = 0;
