@@ -38,18 +38,39 @@ namespace Aximo.Engine.Audio
 
         public void AddCable(AudioCable cable)
         {
-            Cables = Cables.AppendElement(cable);
-            cable.CableInput.AddCable(cable);
-            cable.CableOutput.AddCable(cable);
+            TryAddCable(cable);
         }
 
-        public void AddCable(Port moduleOutput, Port moduleInput)
+        public void AddCable(Port port1, Port port2)
         {
-            AddCable(new AudioCable(moduleOutput, moduleInput));
+            TryAddCable(port1, port2);
+        }
+
+        public bool TryAddCable(AudioCable cable)
+        {
+            try
+            {
+                Cables = Cables.AppendElement(cable);
+                cable.CableInput.AddCable(cable);
+                cable.CableOutput.AddCable(cable);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool TryAddCable(Port port1, Port port2)
+        {
+            return TryAddCable(new AudioCable(port1, port2));
         }
 
         public void RemoveCable(AudioCable cable)
         {
+            if (cable == null)
+                return;
+
             Cables = Cables.RemoveElement(cable);
             cable.CableInput.RemoveCable(cable);
             cable.CableOutput.RemoveCable(cable);
@@ -57,7 +78,7 @@ namespace Aximo.Engine.Audio
 
         public long Tick;
 
-        public void Process()
+        public void Process(AudioProcessArgs e)
         {
             var tasks = Tasks;
             lock (tasks)
@@ -72,7 +93,7 @@ namespace Aximo.Engine.Audio
             var modules = Modules;
             var len = modules.Length;
             for (var i = 0; i < len; i++)
-                modules[i].Process();
+                modules[i].Process(e);
 
             var cables = Cables;
             len = cables.Length;
@@ -82,12 +103,18 @@ namespace Aximo.Engine.Audio
             Tick++;
         }
 
+        //private EventCounter Counter = new EventCounter();
+
         private bool Running;
         public void MainLoop()
         {
             Running = true;
+            var e = new AudioProcessArgs();
             while (Running)
-                Process();
+            {
+                e.Time += 1f / 44100f;
+                Process(e);
+            }
         }
 
         private Thread Thread;

@@ -1,9 +1,13 @@
 ﻿// This file is part of Aximo, a Game Engine written in C#. Web: https://github.com/AximoGames
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Linq;
 using Aximo.Engine;
+using Aximo.Engine.Audio;
 using Aximo.Engine.Components.Geometry;
+using Aximo.Engine.Components.UI;
 using Aximo.Render.OpenGL;
+using GLib;
 using OpenToolkit.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -12,55 +16,108 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Aximo.Audio.Rack.Gui
 {
-
-    public class ModuleComponent : StaticMeshComponent
+    public class ModuleComponent : UIPanelComponent
     {
-        public ModuleComponent(Vector2i size) : base(MeshDataBuilder.Cube(), Material.Default)
+
+        public const float ModuleHeight = 26.25f;
+        private const float ModuleHP = 1f;
+        private AudioModule Module;
+
+        public ModuleComponent(AudioModule module, int width)
         {
-            TranslationMatrix = RackApplication.BoardTranslationMatrix;
-            Image = new Image<Rgba32>(size.X, size.Y);
-            Texture = Texture.GetFromBitmap(Image, null);
-            Material = new Material();
-            Material.DiffuseTexture = Texture;
-            UpdateTexture();
+            Module = module;
+            Margin = UIAnchors.Zero;
+            Padding = UIAnchors.Zero;
+            Border = new UIAnchors(1);
+            Size = new Vector2(width, ModuleHeight);
+            Init();
         }
 
-        public SceneComponent AddKnob()
+        private void Init()
         {
-            var comp = new KnobComponent();
+            AddComponent(new UILabelComponent(Module.Name)
+            {
+                Size = new Vector2(Size.X, 5),
+                FontSize = 1.5f,
+            });
+            CurrentLocation.Y += 5;
+
+            foreach (var port in Module.Inputs)
+            {
+                AddPort(port);
+            }
+
+            foreach (var param in Module.Parameters.Where(p => p.Type == AudioParameterType.Slider))
+            {
+                AddSlider(param);
+            }
+
+            foreach (var param in Module.Parameters.Where(p => p.Type == AudioParameterType.Toggle))
+            {
+                AddToggle(param);
+            }
+
+            foreach (var port in Module.Outputs)
+            {
+                AddPort(port);
+            }
+        }
+
+        protected override void DrawControl()
+        {
+            Color bgColor = Color.LightCoral.WithAlpha(0.5f);
+            Color borderColor = Color.DarkGray;
+
+            ImageContext.Clear(bgColor);
+            ImageContext.DrawButton(Border, borderColor);
+        }
+
+        public SceneComponent AddSlider(AudioParameter param)
+        {
+            var comp = new AudioSliderComponent(param);
             AddComponent(comp);
+            //comp.Size = new Vector2(400, 50);
+            comp.SliderThickness = 4f;
+            comp.OuterSize = new Vector2(Size.X, 5);
+            if (CurrentLocation.X > 0)
+            {
+                CurrentLocation.X = 0;
+                CurrentLocation.Y += comp.OuterSize.Y;
+            }
+            comp.Location = CurrentLocation;
+            CurrentLocation.Y += comp.OuterSize.Y;
+            CurrentLocation.X = 0;
             return comp;
         }
 
-        protected void ResizeImage(Vector2i size)
-        {
-            if (size.X == 0 || size.Y == 0)
-                return;
+        private Vector2 CurrentLocation;
 
-            Image = new Image<Rgba32>(size.X, size.Y);
-            UpdateTexture();
+        public SceneComponent AddPort(Port port)
+        {
+            var comp = new PortComponent(port);
+            AddComponent(comp);
+            comp.Location = CurrentLocation;
+            CurrentLocation.X += comp.OuterSize.X;
+            if (CurrentLocation.X >= Size.X)
+            {
+                CurrentLocation.X = 0;
+                CurrentLocation.Y += comp.OuterSize.Y;
+            }
+            return comp;
         }
 
-        protected Image<Rgba32> Image { get; private set; }
-
-        public Texture Texture { get; private set; }
-
-        //public override bool ContainsScreenCoordinate(Vector2 pos)
-        //{
-        //    return base.ContainsScreenCoordinate(pos);
-        //}
-
-        public override void UpdateFrame()
+        public SceneComponent AddToggle(AudioParameter param)
         {
-            Image.Mutate(ctx => ctx.Fill(Color.Red));
-            base.UpdateFrame();
+            var comp = new ToggleComponent(param);
+            AddComponent(comp);
+            comp.Location = CurrentLocation;
+            CurrentLocation.X += comp.OuterSize.X;
+            if (CurrentLocation.X >= Size.X)
+            {
+                CurrentLocation.X = 0;
+                CurrentLocation.Y += comp.OuterSize.Y;
+            }
+            return comp;
         }
-
-        public void UpdateTexture()
-        {
-            Texture.SetData(Image);
-            PropertyChanged();
-        }
-
     }
 }

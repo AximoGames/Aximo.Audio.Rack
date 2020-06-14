@@ -27,7 +27,7 @@ namespace Aximo.Engine.Audio
         private Port[] InputChannels;
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public override void Process()
+        public override void Process(AudioProcessArgs e)
         {
             if (Inputs[2].GetVoltage() >= 0.9f)
                 for (var i = 0; i < InputChannels.Length; i++)

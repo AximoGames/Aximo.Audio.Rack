@@ -34,7 +34,7 @@ namespace Aximo.Engine.Audio
         private Port[] InputChannels;
 
         private short Value;
-        public override void Process()
+        public override void Process(AudioProcessArgs e)
         {
             if (Stream != null)
                 for (var i = 0; i < InputChannels.Length; i++)

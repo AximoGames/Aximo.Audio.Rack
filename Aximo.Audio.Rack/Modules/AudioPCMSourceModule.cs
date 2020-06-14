@@ -47,7 +47,7 @@ namespace Aximo.Engine.Audio
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public override void Process()
+        public override void Process(AudioProcessArgs e)
         {
             if (Rack.Tick == 73888)
             {

@@ -20,6 +20,7 @@ namespace Aximo.Engine.Audio
         public string Name;
         public AudioModule Module;
         public AudioCable[] Cables;
+        public Port[] ConnectedPorts;
         public PortDirection Direction;
 
         public bool IsConnected
@@ -38,6 +39,7 @@ namespace Aximo.Engine.Audio
             Direction = direction;
             Channels = new Channel[MaxChannels];
             Cables = Array.Empty<AudioCable>();
+            ConnectedPorts = Array.Empty<Port>();
             for (var i = 0; i < MaxChannels; i++)
                 Channels[i] = new Channel(i, this);
         }
@@ -60,6 +62,14 @@ namespace Aximo.Engine.Audio
                 if (IsConnected)
                     throw new Exception("Input ports can have only a single cable");
 
+            if (cable.CableInput.Direction == cable.CableOutput.Direction)
+                throw new Exception("Cannot connect to ports with same direction");
+
+            if (Direction == PortDirection.Input)
+                ConnectedPorts = ConnectedPorts.AppendElement(cable.CableInput);
+            else
+                ConnectedPorts = ConnectedPorts.AppendElement(cable.CableOutput);
+
             Cables = Cables.AppendElement(cable);
             if (Direction == PortDirection.Input)
                 cable.Process();
@@ -68,6 +78,12 @@ namespace Aximo.Engine.Audio
         public void RemoveCable(AudioCable cable)
         {
             Cables = Cables.RemoveElement(cable);
+
+            if (Direction == PortDirection.Input)
+                ConnectedPorts = ConnectedPorts.RemoveElement(cable.CableInput);
+            else
+                ConnectedPorts = ConnectedPorts.RemoveElement(cable.CableOutput);
+
             if (Cables.Length == 0 && Direction == PortDirection.Input)
                 SetVoltage(0);
         }

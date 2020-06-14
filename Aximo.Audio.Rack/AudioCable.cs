@@ -14,11 +14,21 @@ namespace Aximo.Engine.Audio
     {
         public Port CableInput;
         public Port CableOutput;
+        public Port[] Ports;
 
-        public AudioCable(Port cableInput, Port cableOutput)
+        public AudioCable(Port port1, Port port2)
         {
-            CableInput = cableInput;
-            CableOutput = cableOutput;
+            if (port1.Direction == PortDirection.Output)
+            {
+                CableInput = port1;
+                CableOutput = port2;
+            }
+            else
+            {
+                CableInput = port2;
+                CableOutput = port1;
+            }
+            Ports = new Port[] { CableInput, CableOutput };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]

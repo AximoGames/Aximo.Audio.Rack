@@ -17,7 +17,7 @@ namespace Aximo.Engine.Audio
         {
             Name = "Amplifier";
 
-            VolumeParam = ConfigureParameter("Volume", 0, 0, 1, 1);
+            VolumeParam = ConfigureParameter("Volume", 0, AudioParameterType.Slider, 0, 1, 1);
 
             ConfigureInput("Left", 0);
             ConfigureInput("Right", 1);
@@ -29,7 +29,7 @@ namespace Aximo.Engine.Audio
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public override void Process()
+        public override void Process(AudioProcessArgs e)
         {
             var inputChannels = InputChannels;
             var len = InputChannels.Length;

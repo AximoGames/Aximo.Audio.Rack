@@ -15,12 +15,12 @@ namespace Aximo.Engine.Audio
 
         public AudioMix4Module()
         {
-            Name = "Amplifier";
+            Name = "Mix4";
 
-            ConfigureParameter("Volume1", 0, 0, 1, DefaultVolume);
-            ConfigureParameter("Volume2", 1, 0, 1, DefaultVolume);
-            ConfigureParameter("Volume3", 2, 0, 1, DefaultVolume);
-            ConfigureParameter("Volume4", 3, 0, 1, DefaultVolume);
+            ConfigureParameter("Volume1", 0, AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter("Volume2", 1, AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter("Volume3", 2, AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter("Volume4", 3, AudioParameterType.Slider, 0, 1, DefaultVolume);
 
             ConfigureInput("Left1", 0);
             ConfigureInput("Right1", 1);
@@ -41,7 +41,7 @@ namespace Aximo.Engine.Audio
         private float[] TmpOut = new float[2];
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public override void Process()
+        public override void Process(AudioProcessArgs e)
         {
             var inputChannels = InputChannels;
             var len = InputChannels.Length / 2;
