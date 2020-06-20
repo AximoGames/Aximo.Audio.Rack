@@ -22,6 +22,9 @@ namespace Aximo.Engine.Audio
 
         public abstract void Process(AudioProcessArgs e);
 
+        public const int SamplesPerSecond = 44100;
+        public const float SampleTime = 1.0f / SamplesPerSecond;
+
         protected Port ConfigureOutput(int i, string name)
         {
             Outputs = Outputs.EnsureSize(i + 1);
@@ -44,8 +47,6 @@ namespace Aximo.Engine.Audio
             return port;
         }
 
-
-
         protected AudioParameter ConfigureParameter(int i, string name, AudioParameterType type, float min, float max, float? value)
         {
             Parameters = Parameters.EnsureSize(i + 1);
@@ -56,5 +57,8 @@ namespace Aximo.Engine.Audio
                 parameter.Value = (float)value;
             return parameter;
         }
+
+        public virtual AudioWidget CreateWidget() => new AudioAutoWidget<AudioModule>(this);
     }
+
 }

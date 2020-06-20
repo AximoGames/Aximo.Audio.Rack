@@ -50,7 +50,7 @@ namespace Aximo.Engine.Audio
 
             Env.Gate(Trigger.GetVoltage() >= 0.9f);
 
-            var volume = Env.Process(out _);
+            var volume = -Env.Process(out _);
             Volume.SetVoltage(volume * 10f);
         }
     }

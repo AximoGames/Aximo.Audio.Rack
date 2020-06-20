@@ -32,7 +32,7 @@ namespace Aximo.Engine.Audio
         public AudioParameterType Type;
 
         public AudioParameterScale ScaleType;
-        public float DisplayMultiplier;
+        public float DisplayMultiplier = 1;
         public float DisplayOffset;
         public float DisplayBase;
 

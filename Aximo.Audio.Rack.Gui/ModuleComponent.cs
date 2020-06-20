@@ -2,12 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Linq;
+using System.Reflection;
 using Aximo.Engine;
 using Aximo.Engine.Audio;
 using Aximo.Engine.Components.Geometry;
 using Aximo.Engine.Components.UI;
 using Aximo.Render.OpenGL;
-using GLib;
 using OpenToolkit.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -16,12 +16,13 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Aximo.Audio.Rack.Gui
 {
-    public class ModuleComponent : UIPanelComponent
+    public class ModuleComponent : UIPanelComponent, IWidgetInterface
     {
 
         public const float ModuleHeight = 26.25f;
         private const float ModuleHP = 1f;
         private AudioModule Module;
+        private AudioWidget Widget;
 
         public ModuleComponent(AudioModule module, int width)
         {
@@ -30,11 +31,16 @@ namespace Aximo.Audio.Rack.Gui
             Padding = UIAnchors.Zero;
             Border = new UIAnchors(1);
             OuterSize = new Vector2(width, ModuleHeight);
+            ModuleSize = new Vector2(width, ModuleHeight);
             Init();
         }
 
         private void Init()
         {
+            Widget = Module.CreateWidget();
+            Widget.SetInterface(this);
+            Widget.Init();
+
             AddComponent(new UILabelComponent(Module.Name)
             {
                 Size = new Vector2(Size.X, 2),
@@ -91,6 +97,8 @@ namespace Aximo.Audio.Rack.Gui
 
         private Vector2 CurrentLocation;
 
+        public Vector2 ModuleSize { get; private set; }
+
         public SceneComponent AddPort(Port port)
         {
             var comp = new PortComponent(port);
@@ -117,6 +125,27 @@ namespace Aximo.Audio.Rack.Gui
                 CurrentLocation.Y += comp.OuterSize.Y;
             }
             return comp;
+        }
+
+        public UIComponent AddCanvas(Vector2 size)
+        {
+            var comp = new AudioCanvasComponent(Widget);
+            AddComponent(comp);
+            comp.OuterSize = size;
+            if (CurrentLocation.X > 0)
+            {
+                CurrentLocation.X = 0;
+                CurrentLocation.Y += comp.OuterSize.Y;
+            }
+            comp.Location = CurrentLocation;
+            CurrentLocation.Y += comp.OuterSize.Y;
+            CurrentLocation.X = 0;
+            return comp;
+        }
+
+        public ImageContext RegisterCanvas(Vector2 size)
+        {
+            return AddCanvas(size).ImageContext;
         }
     }
 }

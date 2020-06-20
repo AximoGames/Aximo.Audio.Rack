@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Aximo.Audio.Rack.JsonModel;
 //using System.Media;
 
 namespace Aximo.Engine.Audio
@@ -77,6 +78,11 @@ namespace Aximo.Engine.Audio
         }
 
         public long Tick;
+
+        public void LoadFromFile(string filePath)
+        {
+            var file = JsFile.LoadFile(filePath);
+        }
 
         public void Process(AudioProcessArgs e)
         {
