@@ -7,5 +7,6 @@ namespace Aximo.Engine.Audio
     {
         public float DeltaTime;
         public float Time;
+        public long Tick;
     }
 }

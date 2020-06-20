@@ -77,25 +77,8 @@ namespace Aximo.Engine.Audio
             cable.CableOutput.RemoveCable(cable);
         }
 
-        public long Tick;
-
-        public void LoadFromFile(string filePath)
+        public virtual void Process(AudioProcessArgs e)
         {
-            var file = JsFile.LoadFile(filePath);
-        }
-
-        public void Process(AudioProcessArgs e)
-        {
-            var tasks = Tasks;
-            lock (tasks)
-            {
-                while (tasks.Count > 0)
-                {
-                    var task = tasks.Dequeue();
-                    task();
-                }
-            }
-
             var modules = Modules;
             var len = modules.Length;
             for (var i = 0; i < len; i++)
@@ -105,44 +88,6 @@ namespace Aximo.Engine.Audio
             len = cables.Length;
             for (var i = 0; i < len; i++)
                 cables[i].Process();
-
-            Tick++;
-        }
-
-        //private EventCounter Counter = new EventCounter();
-
-        private bool Running;
-        public void MainLoop()
-        {
-            Running = true;
-            var e = new AudioProcessArgs();
-            while (Running)
-            {
-                e.Time += 1f / 44100f;
-                Process(e);
-            }
-        }
-
-        private Thread Thread;
-        public void StartThread()
-        {
-            Thread = new Thread(MainLoop);
-            Thread.Priority = ThreadPriority.Highest;
-            Thread.IsBackground = false;
-            Thread.Start();
-            Thread.Sleep(1000); // TODO: use waiter!
-        }
-
-        private Queue<Action> Tasks = new Queue<Action>();
-        public void Dispatch(Action task)
-        {
-            lock (Tasks)
-                Tasks.Enqueue(task);
-        }
-
-        public void Stop()
-        {
-            Running = false;
         }
 
         public AudioModule GetModule(string name)

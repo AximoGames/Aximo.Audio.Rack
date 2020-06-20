@@ -20,7 +20,7 @@ namespace Aximo.Audio.Rack.Gui
         public static Matrix4 BoardTranslationMatrix = Matrix4.CreateScale(1, -1, 1);
         public static readonly string Filename = "c:/users/sebastian/Downloads/275416__georcduboe__ambient-naturept2-squarepurity-2-135bpm.wav";
 
-        public AudioRack Rack;
+        public AudioRackCollection Rack;
 
         protected override void SetupScene()
         {
@@ -81,7 +81,7 @@ namespace Aximo.Audio.Rack.Gui
             //    RelativeTranslation = new Vector3(0, 0, 0.5f),
             //}));
 
-            Rack = new AudioRack();
+            Rack = new AudioRackCollection();
 
             var inMod = new AudioPCMSourceModule();
             inMod.SetInput(AudioStream.Load(Filename));

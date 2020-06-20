@@ -47,7 +47,7 @@ namespace Aximo.Engine.Audio
                         var s = "";
                     }
                     Value = value;
-                    StreamWriter.WriteLine(Rack.Tick + ": " + value);
+                    StreamWriter.WriteLine(e.Tick + ": " + value);
                     //if (AxMath.Approximately(voltage, v))
                     //{
                     //    var s = "";
