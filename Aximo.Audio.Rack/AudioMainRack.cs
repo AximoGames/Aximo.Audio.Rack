@@ -11,7 +11,7 @@ using Aximo.Audio.Rack.JsonModel;
 namespace Aximo.Engine.Audio
 {
 
-    public class AudioRackCollection : AudioRack
+    public class AudioMainRack : AudioRack
     {
         public void LoadFromFile(string filePath)
         {

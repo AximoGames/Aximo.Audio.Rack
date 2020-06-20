@@ -11,7 +11,7 @@ namespace Aximo.Engine.Audio
 
         public static void Main_()
         {
-            var rack = new AudioRackCollection();
+            var rack = new AudioMainRack();
 
             var inMod = new AudioPCMSourceModule();
             inMod.SetInput(AudioStream.Load(Filename));
