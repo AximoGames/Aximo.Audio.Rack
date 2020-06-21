@@ -2,7 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -44,6 +46,19 @@ namespace Aximo.Engine.Audio.Modules
         private int BufferHandleIndex = 0;
         private int SourceHandle;
 
+        private void CheckLibrary()
+        {
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                var url = "https://github.com/AximoGames/Aximo.redist.OpenAL/raw/a0cdf016869c634c054f416989a1fdedf26d16fe/lib/libopenal.so.1.20.1";
+                var fileName = "libopenal.so.1";
+                var binPath = Path.Combine(AssetManager.BinDir, fileName);
+                Log.Info($"Cannot find {fileName}. Downloading {url}");
+                if (!File.Exists(binPath))
+                    new WebClient().DownloadFile(url, binPath);
+            }
+        }
+
         private void Init()
         {
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
@@ -60,6 +75,8 @@ namespace Aximo.Engine.Audio.Modules
             Data1 = new short[BufferSize];
             Data2 = new short[BufferSize];
             Data = Data1;
+
+            CheckLibrary();
 
             var devices = ALC.GetStringList(GetEnumerationStringList.DeviceSpecifier);
             Console.WriteLine($"Devices: {string.Join(", ", devices)}");
