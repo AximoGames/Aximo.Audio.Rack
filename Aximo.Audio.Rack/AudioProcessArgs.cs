@@ -5,8 +5,8 @@ namespace Aximo.Engine.Audio
 {
     public class AudioProcessArgs
     {
-        public float DeltaTime;
-        public float Time;
+        public float SampleRate;
+        public float SampleTime;
         public long Tick;
     }
 }

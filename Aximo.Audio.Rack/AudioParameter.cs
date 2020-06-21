@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.ComponentModel.Design.Serialization;
 using System.Runtime.CompilerServices;
 using OpenToolkit.Windowing.Common;
 
@@ -123,6 +124,33 @@ namespace Aximo.Engine.Audio
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public float GetValue() => Value;
+
+        private float SmoothTarget;
+        private float SmoothSource;
+        internal bool InSmoothing;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public void SetValueSmoothed(float value)
+        {
+            SmoothSource = Value;
+            SmoothTarget = MathF.Max(MathF.Min(value, Max), Min);
+            Module.Rack.RegisterSmoothing(this);
+        }
+
+        internal void ProcessSmoothing(AudioProcessArgs e)
+        {
+            float value = Value;
+            const float smoothLambda = 60f;
+            float newValue = value + ((SmoothTarget - value) * smoothLambda * e.SampleTime);
+            if (AxMath.Approximately(value, newValue))
+            {
+                Value = SmoothTarget;
+                Module.Rack.UnregisterSmoothing(this);
+            }
+            else
+            {
+                Value = newValue;
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public float GetMappedValue(float toMin, float toMax) => AxMath.Map(Value, Min, Max, toMin, toMax);

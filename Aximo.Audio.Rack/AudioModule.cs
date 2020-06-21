@@ -3,11 +3,13 @@
 
 using System;
 using System.Linq;
+using OpenToolkit.Mathematics;
 
 namespace Aximo.Engine.Audio
 {
     public abstract class AudioModule
     {
+        public Vector2i Position;
         internal AudioRack Rack;
         public Port[] Outputs = Array.Empty<Port>();
         public Port[] Inputs = Array.Empty<Port>();
@@ -15,8 +17,11 @@ namespace Aximo.Engine.Audio
 
         public Port GetOutput(string name) => Outputs.FirstOrDefault(p => p.Name == name);
         public Port GetInput(string name) => Inputs.FirstOrDefault(p => p.Name == name);
+        public Port GetOutput(int index) => Outputs.TryGet(index);
+        public Port GetInput(int index) => Inputs.TryGet(index);
 
         public AudioParameter GetParameter(string name) => Parameters.FirstOrDefault(p => p.Name == name);
+        public AudioParameter GetParameter(int index) => Parameters[index];
 
         public string Name;
 
@@ -29,7 +34,7 @@ namespace Aximo.Engine.Audio
         {
             Outputs = Outputs.EnsureSize(i + 1);
             if (Outputs[i] == null)
-                Outputs[i] = new Port(this, PortDirection.Output, name);
+                Outputs[i] = new Port(this, PortDirection.Output, name, i);
 
             var port = Outputs[i];
             port.Name = name;
@@ -40,7 +45,7 @@ namespace Aximo.Engine.Audio
         {
             Inputs = Inputs.EnsureSize(i + 1);
             if (Inputs[i] == null)
-                Inputs[i] = new Port(this, PortDirection.Input, name);
+                Inputs[i] = new Port(this, PortDirection.Input, name, i);
 
             var port = Inputs[i];
             port.Name = name;

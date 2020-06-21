@@ -55,7 +55,7 @@ namespace Aximo.Audio.Rack.Gui
 
         protected override void OnSliderValueChanged(SliderValueChangedArgs e)
         {
-            Param.Value = e.NewValue;
+            Param.SetValueSmoothed(e.NewValue);
             base.OnSliderValueChanged(e);
         }
 

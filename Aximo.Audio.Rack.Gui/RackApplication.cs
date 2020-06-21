@@ -22,6 +22,20 @@ namespace Aximo.Audio.Rack.Gui
 
         public AudioMainRack Rack;
 
+        public RackApplication()
+        {
+            CommandLineManager.Current.OnExecuteConsoleCommandLine += ExecuteConsoleCommandLineDelegate;
+        }
+
+        private void ExecuteConsoleCommandLineDelegate(ExecuteConsoleCommandLineArgs e)
+        {
+            if (e.CommandLine == "s")
+            {
+                Rack.SaveToFile("/tmp/rack.json");
+                e.Handled = true;
+            }
+        }
+
         protected override void SetupScene()
         {
             var camSize = new Vector2(9 * RenderContext.ScreenAspectRatio, 9);
@@ -83,53 +97,56 @@ namespace Aximo.Audio.Rack.Gui
 
             Rack = new AudioMainRack();
 
-            var inMod = new AudioPCMSourceModule();
-            inMod.SetInput(AudioStream.Load(Filename));
-            inMod.OnEndOfStream += () =>
-            {
-                inMod.Play();
-            };
+            //var inMod = new AudioPCMSourceModule();
+            //inMod.SetInput(AudioStream.Load(Filename));
+            //inMod.OnEndOfStream += () =>
+            //{
+            //    inMod.Play();
+            //};
 
-            var inMod2 = new AudioPCMSourceModule();
-            inMod2.SetInput(AudioStream.Load(Filename));
-            inMod2.OnEndOfStream += () =>
-            {
-                inMod2.Play();
-            };
+            //var inMod2 = new AudioPCMSourceModule();
+            //inMod2.SetInput(AudioStream.Load(Filename));
+            //inMod2.OnEndOfStream += () =>
+            //{
+            //    inMod2.Play();
+            //};
 
-            var ampMod = new AudioAmplifierModule();
-            var envMod = new AudioADSRModule();
-            var vcoMod = new AudioVCOModule();
-            var vcoMod2 = new AudioVCOModule();
-            var scopeMod = new AudioScopeModule();
+            //var ampMod = new AudioAmplifierModule();
+            //var envMod = new AudioADSRModule();
+            //var vcoMod = new AudioVCOModule();
+            //var vcoMod2 = new AudioVCOModule();
+            //var scopeMod = new AudioScopeModule();
 
-            var outMod = new AudioPCMOpenALSinkModule();
-            //var outFile = new AudioSinkStream();
+            //var outMod = new AudioPCMOpenALSinkModule();
+            ////var outFile = new AudioSinkStream();
 
-            var mixMod = new AudioMix4Module();
-            mixMod.GetParameter("Volume1").SetValue(0.5f);
+            //var mixMod = new AudioMix4Module();
+            //mixMod.GetParameter("Volume1").SetValue(0.5f);
 
-            Rack.AddModule(inMod);
-            Rack.AddModule(inMod2);
-            Rack.AddModule(outMod);
-            Rack.AddModule(mixMod);
-            Rack.AddModule(vcoMod);
-            Rack.AddModule(vcoMod2);
-            Rack.AddModule(ampMod);
-            Rack.AddModule(envMod);
-            Rack.AddModule(scopeMod);
+            //Rack.AddModule(inMod);
+            //Rack.AddModule(inMod2);
+            //Rack.AddModule(outMod);
+            //Rack.AddModule(mixMod);
+            //Rack.AddModule(vcoMod);
+            //Rack.AddModule(vcoMod2);
+            //Rack.AddModule(ampMod);
+            //Rack.AddModule(envMod);
+            //Rack.AddModule(scopeMod);
 
-            Rack.AddCable(inMod.GetOutput("Left"), mixMod.GetInput("Left1"));
-            Rack.AddCable(inMod.GetOutput("Right"), mixMod.GetInput("Right1"));
-            Rack.AddCable(inMod2.GetOutput("Left"), mixMod.GetInput("Left2"));
-            Rack.AddCable(inMod2.GetOutput("Right"), mixMod.GetInput("Right2"));
-            Rack.AddCable(mixMod.GetOutput("Left"), outMod.GetInput("Left"));
-            Rack.AddCable(mixMod.GetOutput("Right"), outMod.GetInput("Right"));
-
+            //Rack.AddCable(inMod.GetOutput("Left"), mixMod.GetInput("Left1"));
+            //Rack.AddCable(inMod.GetOutput("Right"), mixMod.GetInput("Right1"));
+            //Rack.AddCable(inMod2.GetOutput("Left"), mixMod.GetInput("Left2"));
+            //Rack.AddCable(inMod2.GetOutput("Right"), mixMod.GetInput("Right2"));
+            //Rack.AddCable(mixMod.GetOutput("Left"), outMod.GetInput("Left"));
+            //Rack.AddCable(mixMod.GetOutput("Right"), outMod.GetInput("Right"));
+            //--
             //rack.AddCable(inMod.GetOutput("Gate"), outMod.GetInput("Gate"));
 
+            //Rack.SaveToFile("/tmp/test.json");
+            Rack.LoadFromFile("/tmp/rack.json");
+
             Rack.StartThread();
-            inMod.Play();
+            //inMod.Play();
 
             float x = 0;
             float y = 0;

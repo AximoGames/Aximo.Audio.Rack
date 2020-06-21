@@ -1,6 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Numerics;
+using System.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using OpenToolkit.Mathematics;
 
 namespace Aximo.Audio.Rack.JsonModel
 {
@@ -15,9 +21,36 @@ namespace Aximo.Audio.Rack.JsonModel
             File.WriteAllText(filePath, ToString());
         }
 
+        public class CustomContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                var property = base.CreateProperty(member, memberSerialization);
+
+                if (IsIgnored(member))
+                {
+                    property.ShouldSerialize = i => false;
+                    property.Ignored = true;
+                }
+
+                return property;
+            }
+
+            private bool IsIgnored(MemberInfo member)
+            {
+                if (member.DeclaringType == typeof(Vector2i))
+                    return member.Name != "X" && member.Name != "Y";
+
+                return false;
+            }
+        }
+
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this);
+            return JsonConvert.SerializeObject(this, new JsonSerializerSettings
+            {
+                ContractResolver = new CustomContractResolver(),
+            });
         }
 
         public static JsFile Parse(string json)

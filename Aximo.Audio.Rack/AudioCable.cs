@@ -8,33 +8,33 @@ namespace Aximo.Engine.Audio
 {
     /// <summary>
     /// Transfers voltages from one Port to another Port.
-    /// Flow direction is from <see cref="CableInput"/> to <see cref="CableOutput"/>
+    /// Flow direction is from <see cref="ModuleOutput"/> to <see cref="ModuleInput"/>
     /// </summary>
     public class AudioCable
     {
-        public Port CableInput;
-        public Port CableOutput;
+        public Port ModuleOutput;
+        public Port ModuleInput;
         public Port[] Ports;
 
         public AudioCable(Port port1, Port port2)
         {
             if (port1.Direction == PortDirection.Output)
             {
-                CableInput = port1;
-                CableOutput = port2;
+                ModuleOutput = port1;
+                ModuleInput = port2;
             }
             else
             {
-                CableInput = port2;
-                CableOutput = port1;
+                ModuleOutput = port2;
+                ModuleInput = port1;
             }
-            Ports = new Port[] { CableInput, CableOutput };
+            Ports = new Port[] { ModuleOutput, ModuleInput };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Process()
         {
-            CableOutput.SetVoltage(CableInput.GetVoltage());
+            ModuleInput.SetVoltage(ModuleOutput.GetVoltage());
         }
     }
 }

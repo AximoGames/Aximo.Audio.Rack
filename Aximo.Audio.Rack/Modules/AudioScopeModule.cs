@@ -87,10 +87,17 @@ namespace Aximo.Engine.Audio
 
             private ImageContext ImageContext;
 
+            private long UpdateSkip = 0;
             public override void UpdateFrame()
             {
+                if (UpdateSkip-- > 0)
+                    return;
+                UpdateSkip = 30;
+
                 var buffer = Module.Buffer;
                 ImageContext.Clear(Color.Black);
+                DrawRanges();
+
                 ImageContext.FillStyle(Color.Red);
                 ImageContext.BeginPath();
                 for (var i = 0; i < BUFFER_SIZE; i++)
@@ -105,6 +112,26 @@ namespace Aximo.Engine.Audio
                 }
                 ImageContext.Stroke();
                 ImageContext.Flush();
+            }
+
+            private void DrawRanges()
+            {
+                DrawRange(5, Color.Green);
+                DrawRange(10, Color.Blue);
+                DrawRange(1, Color.DarkGray);
+            }
+
+            private void DrawRange(float num, Color color)
+            {
+                ImageContext.FillStyle(color);
+                ImageContext.BeginPath();
+                var y = AxMath.Map(num * Module.ScaleY1Param.GetDisplayValue(), -10, 10, 0, ImageContext.Image.Size().Height);
+                ImageContext.MoveTo(new Vector2(0, y));
+                ImageContext.LineTo(new Vector2(ImageContext.Image.Size().Width, y));
+                y = AxMath.Map(-num * Module.ScaleY1Param.GetDisplayValue(), -10, 10, 0, ImageContext.Image.Size().Height);
+                ImageContext.MoveTo(new Vector2(0, y));
+                ImageContext.LineTo(new Vector2(ImageContext.Image.Size().Width, y));
+                ImageContext.Stroke();
             }
         }
     }

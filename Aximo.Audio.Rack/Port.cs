@@ -17,6 +17,7 @@ namespace Aximo.Engine.Audio
     {
         public Channel[] Channels;
         public const int MaxChannels = 16;
+        public int Index;
         public string Name;
         public AudioModule Module;
         public AudioCable[] Cables;
@@ -32,10 +33,11 @@ namespace Aximo.Engine.Audio
             }
         }
 
-        public Port(AudioModule module, PortDirection direction, string name)
+        public Port(AudioModule module, PortDirection direction, string name, int index)
         {
             Module = module;
             Name = name;
+            Index = index;
             Direction = direction;
             Channels = new Channel[MaxChannels];
             Cables = Array.Empty<AudioCable>();
@@ -62,13 +64,13 @@ namespace Aximo.Engine.Audio
                 if (IsConnected)
                     throw new Exception("Input ports can have only a single cable");
 
-            if (cable.CableInput.Direction == cable.CableOutput.Direction)
+            if (cable.ModuleOutput.Direction == cable.ModuleInput.Direction)
                 throw new Exception("Cannot connect to ports with same direction");
 
             if (Direction == PortDirection.Input)
-                ConnectedPorts = ConnectedPorts.AppendElement(cable.CableInput);
+                ConnectedPorts = ConnectedPorts.AppendElement(cable.ModuleOutput);
             else
-                ConnectedPorts = ConnectedPorts.AppendElement(cable.CableOutput);
+                ConnectedPorts = ConnectedPorts.AppendElement(cable.ModuleInput);
 
             Cables = Cables.AppendElement(cable);
             if (Direction == PortDirection.Input)
@@ -80,9 +82,9 @@ namespace Aximo.Engine.Audio
             Cables = Cables.RemoveElement(cable);
 
             if (Direction == PortDirection.Input)
-                ConnectedPorts = ConnectedPorts.RemoveElement(cable.CableInput);
+                ConnectedPorts = ConnectedPorts.RemoveElement(cable.ModuleOutput);
             else
-                ConnectedPorts = ConnectedPorts.RemoveElement(cable.CableOutput);
+                ConnectedPorts = ConnectedPorts.RemoveElement(cable.ModuleInput);
 
             if (Cables.Length == 0 && Direction == PortDirection.Input)
                 SetVoltage(0);

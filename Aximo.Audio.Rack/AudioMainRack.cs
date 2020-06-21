@@ -4,19 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Aximo.Audio.Rack.JsonModel;
 //using System.Media;
 
 namespace Aximo.Engine.Audio
 {
-
     public class AudioMainRack : AudioRack
     {
-        public void LoadFromFile(string filePath)
-        {
-            var file = JsFile.LoadFile(filePath);
-        }
 
         public override void Process(AudioProcessArgs e)
         {
@@ -42,9 +38,10 @@ namespace Aximo.Engine.Audio
         {
             Running = true;
             var e = new AudioProcessArgs();
+            e.SampleRate = 44100;
             while (Running)
             {
-                e.Time += 1f / 44100f;
+                e.SampleTime = 1f / e.SampleRate;
                 e.Tick = Tick;
                 Process(e);
             }

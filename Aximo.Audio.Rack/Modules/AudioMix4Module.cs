@@ -1,6 +1,7 @@
 ﻿// This file is part of Aximo, a Game Engine written in C#. Web: https://github.com/AximoGames
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Aximo.Engine.Audio
@@ -17,7 +18,7 @@ namespace Aximo.Engine.Audio
         {
             Name = "Mix4";
 
-            ConfigureParameter(0, "Volume1", AudioParameterType.Slider, 0, 1, DefaultVolume);
+            ConfigureParameter(0, "Volume1", AudioParameterType.Slider, 0, 1, DefaultVolume).SetDisplayRangeLog(10, 40);
             ConfigureParameter(1, "Volume2", AudioParameterType.Slider, 0, 1, DefaultVolume);
             ConfigureParameter(2, "Volume3", AudioParameterType.Slider, 0, 1, DefaultVolume);
             ConfigureParameter(3, "Volume4", AudioParameterType.Slider, 0, 1, DefaultVolume);
@@ -54,7 +55,7 @@ namespace Aximo.Engine.Audio
             for (var i = 0; i < len; i++)
             {
                 var param = parameters[i];
-                var volume = param.Value;
+                var volume = MathF.Pow(param.Value, 2);
 
                 var idx = i * 2;
                 var input = inputChannels[idx];

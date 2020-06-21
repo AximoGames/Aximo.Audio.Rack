@@ -8,6 +8,6 @@ namespace Aximo.Audio.Rack.JsonModel
     public class JsParameter
     {
         public int Id { get; set; }
-        public double Value { get; set; }
+        public float Value { get; set; }
     }
 }
