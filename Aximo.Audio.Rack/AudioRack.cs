@@ -31,6 +31,20 @@ namespace Aximo.Engine.Audio
             }
         }
 
+        public IEnumerable<AudioModule> GetModules(string name)
+        {
+            // SLOW: To not call this method from processing
+
+            var modules = Modules;
+            var len = modules.Length;
+            for (var i = 0; i < len; i++)
+            {
+                var mod = modules[i];
+                if (mod.Name == name)
+                    yield return mod;
+            }
+        }
+
         public void AddModule(AudioModule module)
         {
             Modules = Modules.AppendElement(module);
@@ -126,8 +140,13 @@ namespace Aximo.Engine.Audio
 
             foreach (var jsCable in file.Cables)
             {
-                var inputMod = modules[jsCable.InputModuleId];
-                var outputMod = modules[jsCable.OutputModuleId];
+                var inputMod = modules.TryGet(jsCable.InputModuleId);
+                if (inputMod == null)
+                    continue;
+
+                var outputMod = modules.TryGet(jsCable.OutputModuleId);
+                if (outputMod == null)
+                    continue;
 
                 var inputPort = inputMod.GetInput(jsCable.InputPortId);
                 if (inputPort == null)

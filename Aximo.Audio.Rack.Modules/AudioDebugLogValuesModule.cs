@@ -3,7 +3,7 @@
 
 using System.IO;
 
-namespace Aximo.Engine.Audio
+namespace Aximo.Engine.Audio.Modules
 {
     public class AudioDebugLogValuesModule : AudioModule
     {

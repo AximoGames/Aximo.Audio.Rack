@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Aximo.Engine;
 using Aximo.Engine.Audio;
+using Aximo.Engine.Audio.Modules;
 using Aximo.Engine.Components.Geometry;
 using Aximo.Engine.Components.Lights;
 using Aximo.Engine.Components.UI;
@@ -95,6 +96,7 @@ namespace Aximo.Audio.Rack.Gui
             //    RelativeTranslation = new Vector3(0, 0, 0.5f),
             //}));
 
+            AudioModuleManager.Current.RegisterModules(typeof(AudioPCMSourceModule).Assembly);
             Rack = new AudioMainRack();
 
             //var inMod = new AudioPCMSourceModule();

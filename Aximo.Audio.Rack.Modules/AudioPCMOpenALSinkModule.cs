@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using OpenToolkit.Audio.OpenAL;
 
-namespace Aximo.Engine.Audio
+namespace Aximo.Engine.Audio.Modules
 {
 
     public class AudioPCMOpenALSinkModule : AudioModule

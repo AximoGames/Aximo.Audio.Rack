@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Aximo.Engine.Audio
+namespace Aximo.Engine.Audio.Modules
 {
 
     public class AudioADSRModule : AudioModule

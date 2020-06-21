@@ -11,47 +11,47 @@ namespace Aximo.Engine.Audio
 
         public static void Main_()
         {
-            var rack = new AudioMainRack();
+            //var rack = new AudioMainRack();
 
-            var inMod = new AudioPCMSourceModule();
-            inMod.SetInput(AudioStream.Load(Filename));
-            inMod.OnEndOfStream += () =>
-            {
-                inMod.Play();
-            };
+            //var inMod = new AudioPCMSourceModule();
+            //inMod.SetInput(AudioStream.Load(Filename));
+            //inMod.OnEndOfStream += () =>
+            //{
+            //    inMod.Play();
+            //};
 
-            var inMod2 = new AudioPCMSourceModule();
-            inMod2.SetInput(AudioStream.Load(Filename));
-            inMod2.OnEndOfStream += () =>
-            {
-                inMod2.Play();
-            };
+            //var inMod2 = new AudioPCMSourceModule();
+            //inMod2.SetInput(AudioStream.Load(Filename));
+            //inMod2.OnEndOfStream += () =>
+            //{
+            //    inMod2.Play();
+            //};
 
-            var outMod = new AudioPCMOpenALSinkModule();
-            //var outFile = new AudioSinkStream();
+            //var outMod = new AudioPCMOpenALSinkModule();
+            ////var outFile = new AudioSinkStream();
 
-            var mixMod = new AudioMix4Module();
-            mixMod.GetParameter("Volume1").SetValue(0.5f);
+            //var mixMod = new AudioMix4Module();
+            //mixMod.GetParameter("Volume1").SetValue(0.5f);
 
-            rack.AddModule(inMod);
-            rack.AddModule(inMod2);
-            rack.AddModule(outMod);
-            rack.AddModule(mixMod);
+            //rack.AddModule(inMod);
+            //rack.AddModule(inMod2);
+            //rack.AddModule(outMod);
+            //rack.AddModule(mixMod);
 
-            rack.AddCable(inMod.GetOutput("Left"), mixMod.GetInput("Left1"));
-            rack.AddCable(inMod.GetOutput("Right"), mixMod.GetInput("Right1"));
-            rack.AddCable(inMod2.GetOutput("Left"), mixMod.GetInput("Left2"));
-            rack.AddCable(inMod2.GetOutput("Right"), mixMod.GetInput("Right2"));
-            rack.AddCable(mixMod.GetOutput("Left"), outMod.GetInput("Left"));
-            rack.AddCable(mixMod.GetOutput("Right"), outMod.GetInput("Right"));
+            //rack.AddCable(inMod.GetOutput("Left"), mixMod.GetInput("Left1"));
+            //rack.AddCable(inMod.GetOutput("Right"), mixMod.GetInput("Right1"));
+            //rack.AddCable(inMod2.GetOutput("Left"), mixMod.GetInput("Left2"));
+            //rack.AddCable(inMod2.GetOutput("Right"), mixMod.GetInput("Right2"));
+            //rack.AddCable(mixMod.GetOutput("Left"), outMod.GetInput("Left"));
+            //rack.AddCable(mixMod.GetOutput("Right"), outMod.GetInput("Right"));
 
-            //rack.AddCable(inMod.GetOutput("Gate"), outMod.GetInput("Gate"));
+            ////rack.AddCable(inMod.GetOutput("Gate"), outMod.GetInput("Gate"));
 
-            rack.StartThread();
-            inMod.Play();
-            //Thread.Sleep(1000);
-            //inMod2.Play();
-            //while (true) { Thread.Sleep(10000); }
+            //rack.StartThread();
+            //inMod.Play();
+            ////Thread.Sleep(1000);
+            ////inMod2.Play();
+            ////while (true) { Thread.Sleep(10000); }
         }
     }
 }

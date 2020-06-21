@@ -8,7 +8,7 @@ namespace Aximo.Engine.Audio
     /// <summary>
     /// Envelope generator (ADSR)
     /// </summary>
-    internal class EnvelopeGenerator
+    public class EnvelopeGenerator
     {
 
         /// <summary>

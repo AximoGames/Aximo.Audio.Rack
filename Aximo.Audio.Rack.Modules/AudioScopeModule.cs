@@ -9,7 +9,7 @@ using OpenToolkit.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Aximo.Engine.Audio
+namespace Aximo.Engine.Audio.Modules
 {
 
     public class AudioScopeModule : AudioModule
