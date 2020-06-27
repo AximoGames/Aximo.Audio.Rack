@@ -21,7 +21,7 @@ namespace Aximo.Audio.Rack.Gui
 
         public const float ModuleHeight = 26.25f;
         private const float ModuleHP = 1f;
-        private AudioModule Module;
+        internal AudioModule Module;
         private AudioWidget Widget;
 
         public ModuleComponent(AudioModule module, int width)

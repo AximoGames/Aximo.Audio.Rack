@@ -51,6 +51,29 @@ namespace Aximo.Engine.Audio
             module.Rack = this;
         }
 
+        public void RemoveModule(AudioModule module)
+        {
+            Modules = Modules.RemoveElement(module);
+
+            foreach (var port in module.Inputs)
+                RemoveCablesFromPort(port);
+
+            foreach (var port in module.Outputs)
+                RemoveCablesFromPort(port);
+
+            module.Rack = this;
+        }
+
+        protected void RemoveCablesFromPort(Port port)
+        {
+            for (var i = port.Cables.Length - 1; i >= 0; i--)
+            {
+                var cable = port.Cables[i];
+                port.RemoveCable(cable);
+                Cables = Cables.RemoveElement(cable);
+            }
+        }
+
         public void AddCable(AudioCable cable)
         {
             TryAddCable(cable);
