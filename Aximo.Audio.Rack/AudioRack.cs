@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Aximo.Audio.Rack.JsonModel;
+using Aximo.Engine.Audio.Modules;
 //using System.Media;
 
 namespace Aximo.Engine.Audio
@@ -136,10 +137,10 @@ namespace Aximo.Engine.Audio
 
         public void LoadFromFile(string filePath)
         {
-            LoadFromJson(JsFile.LoadFile(filePath));
+            LoadFromJson(JsRack.LoadFile(filePath));
         }
 
-        public void LoadFromJson(JsFile file)
+        public void LoadFromJson(JsRack file)
         {
             // temporary list to support appending to existing rack
             var modules = new List<AudioModule>();
@@ -159,6 +160,21 @@ namespace Aximo.Engine.Audio
                     param.SetDisplayValue(jsParam.Value);
                 }
                 AddModule(mod);
+
+                if (mod is AudioRackParentConnectorModule parent)
+                {
+                    if (jsMod.SubRack != null)
+                    {
+                        var childrack = new AudioRack();
+                        childrack.LoadFromJson(jsMod.SubRack);
+                        var childMod = childrack.GetModules<AudioRackChildConnectorModule>().FirstOrDefault();
+                        if (childMod != null)
+                        {
+                            parent.Child = childMod;
+                            childMod.Parent = parent;
+                        }
+                    }
+                }
             }
 
             foreach (var jsCable in file.Cables)
@@ -188,9 +204,9 @@ namespace Aximo.Engine.Audio
             ToJsonModel().SaveToFile(filePath);
         }
 
-        public JsFile ToJsonModel()
+        public JsRack ToJsonModel()
         {
-            var file = new JsFile();
+            var file = new JsRack();
             var modId = 0;
             foreach (var mod in Modules)
             {
@@ -200,6 +216,9 @@ namespace Aximo.Engine.Audio
                     jsMod.Parameters.Add(new JsParameter { Id = paramId++, Value = param.GetDisplayValue() });
 
                 file.Modules.Add(jsMod);
+
+                if (mod is AudioRackParentConnectorModule parentConnector)
+                    jsMod.SubRack = parentConnector.Child.Rack.ToJsonModel();
             }
 
             foreach (var cable in Cables)

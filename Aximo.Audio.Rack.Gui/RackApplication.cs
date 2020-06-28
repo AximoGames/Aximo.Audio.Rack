@@ -18,12 +18,13 @@ using SixLabors.ImageSharp;
 
 namespace Aximo.Audio.Rack.Gui
 {
-    public class RackApplication : Application
+    public class RackApplication : Application, IApplicationInterface
     {
         public static Matrix4 BoardTranslationMatrix = Matrix4.CreateScale(1, -1, 1);
         public static readonly string Filename = "c:/users/sebastian/Downloads/275416__georcduboe__ambient-naturept2-squarepurity-2-135bpm.wav";
 
-        public AudioMainRack Rack;
+        public AudioMainRack MainRack;
+        public AudioRack SelectedRack;
 
         public RackApplication()
         {
@@ -34,7 +35,7 @@ namespace Aximo.Audio.Rack.Gui
         {
             if (e.CommandLine == "s")
             {
-                Rack.SaveToFile("/tmp/rack.json");
+                MainRack.SaveToFile("/tmp/rack.json");
                 e.Handled = true;
             }
 
@@ -51,10 +52,16 @@ namespace Aximo.Audio.Rack.Gui
             {
                 var modName = e.CommandLine.Substring("module add ".Length);
                 var modDef = AudioModuleManager.Current.Find(modName);
-                var mod = modDef.CreateInstance();
-                Rack.Dispatch(() =>
+                if (modDef == null)
                 {
-                    Rack.AddModule(mod);
+                    Console.WriteLine($"Module {modName} not found");
+                    return;
+                }
+
+                var mod = modDef.CreateInstance();
+                MainRack.Dispatch(() =>
+                {
+                    SelectedRack.AddModule(mod);
                     DispatchUpdater(() =>
                     {
                         AddModule(mod);
@@ -67,9 +74,9 @@ namespace Aximo.Audio.Rack.Gui
             {
                 Console.WriteLine("Installed Modules:");
                 Console.WriteLine();
-                for (var i = 0; i < Rack.Modules.Length; i++)
+                for (var i = 0; i < SelectedRack.Modules.Length; i++)
                 {
-                    var mod = Rack.Modules[i];
+                    var mod = SelectedRack.Modules[i];
                     Console.WriteLine($"#{i} {mod.Name}");
                 }
                 Console.WriteLine();
@@ -79,10 +86,10 @@ namespace Aximo.Audio.Rack.Gui
             if (e.CommandLine.StartsWith("module del"))
             {
                 var index = int.Parse(e.CommandLine.Substring("module del".Length));
-                var mod = Rack.Modules[index];
-                Rack.Dispatch(() =>
+                var mod = SelectedRack.Modules[index];
+                MainRack.Dispatch(() =>
                 {
-                    Rack.RemoveModule(mod);
+                    SelectedRack.RemoveModule(mod);
                     DispatchUpdater(() =>
                     {
                         RemoveModule(mod);
@@ -93,7 +100,7 @@ namespace Aximo.Audio.Rack.Gui
             }
         }
 
-        private UIFloatingContainer FlowContainer;
+        private UIFloatingContainer ModuleContainer;
 
         protected override void SetupScene()
         {
@@ -120,10 +127,10 @@ namespace Aximo.Audio.Rack.Gui
                 RelativeScale = new Vector3(2.0f),
             }));
 
-            FlowContainer = new UIFloatingContainer()
+            ModuleContainer = new UIFloatingContainer()
             {
             };
-            SceneContext.AddActor(new Actor(FlowContainer));
+            SceneContext.AddActor(new Actor(ModuleContainer));
 
             SceneContext.AddActor(new Actor(new StatsComponent()
             {
@@ -155,7 +162,7 @@ namespace Aximo.Audio.Rack.Gui
             //}));
 
             AudioModuleManager.Current.RegisterModules(typeof(AudioPCMSourceModule).Assembly);
-            Rack = new AudioMainRack();
+            MainRack = new AudioMainRack();
 
             //var inMod = new AudioPCMSourceModule();
             //inMod.SetInput(AudioStream.Load(Filename));
@@ -204,24 +211,25 @@ namespace Aximo.Audio.Rack.Gui
 
             //Rack.SaveToFile("/tmp/test.json");
             if (File.Exists("/tmp/rack.json"))
-                Rack.LoadFromFile("/tmp/rack.json");
+                MainRack.LoadFromFile("/tmp/rack.json");
 
-            Rack.StartThread();
+            MainRack.StartThread();
             //inMod.Play();
 
-            foreach (var module in Rack.Modules)
-                AddModule(module);
+            CablesComponent cablesComponent;
+            SceneContext.AddActor(new Actor(cablesComponent = new CablesComponent()));
 
-            UISlider debugSlider;
-            FlowContainer.AddComponent(debugSlider = new UISlider()
-            {
-                Margin = new UIAnchors(),
-                Padding = new UIAnchors(),
-                BorderRadius = 0,
-                Location = new Vector2(0, 50),
-                Size = new Vector2(50, 4),
-            });
-            FlowContainer.UpdateFrame(); // Calculate Port Positions
+            SwitchRack(MainRack);
+
+            //UISlider debugSlider;
+            //FlowContainer.AddComponent(debugSlider = new UISlider()
+            //{
+            //    Margin = new UIAnchors(),
+            //    Padding = new UIAnchors(),
+            //    BorderRadius = 0,
+            //    Location = new Vector2(0, 50),
+            //    Size = new Vector2(50, 4),
+            //});
 
             //var line = new LineComponent(new Vector3(2.5f, 2.5f, 0), new Vector3(7.5f, 7.5f, 0));
 
@@ -230,18 +238,14 @@ namespace Aximo.Audio.Rack.Gui
 
             //SceneContext.AddActor(new Actor(line));
 
-            CablesComponent cablesComponent;
-            SceneContext.AddActor(new Actor(cablesComponent = new CablesComponent()));
-            cablesComponent.SetCables(Rack.Cables);
+            //cablesComponent.SetCables(MainRack.Cables);
         }
 
-        private float CurrentX = 0;
-        private float CurrentY = 0;
         private List<ModuleComponent> ModuleComponents = new List<ModuleComponent>();
         private void AddModule(AudioModule module)
         {
             ModuleComponent comp;
-            FlowContainer.AddComponent(comp = new ModuleComponent(module, 20)
+            ModuleContainer.AddComponent(comp = new ModuleComponent(module, 20)
             {
                 Location = new Vector2(CurrentX, CurrentY),
             });
@@ -285,7 +289,7 @@ namespace Aximo.Audio.Rack.Gui
         {
             SelectedPort = uiport;
             var cable = uiport.Port.Cables.LastOrDefault();
-            Rack.RemoveCable(cable);
+            SelectedRack.RemoveCable(cable);
         }
 
         protected override void OnPostMouseUp(MouseButtonArgs e)
@@ -298,11 +302,30 @@ namespace Aximo.Audio.Rack.Gui
         {
             if (SelectedPort != null && SelectedPort != uiport)
             {
-                Rack.TryAddCable(SelectedPort.Port, uiport.Port);
+                SelectedRack.TryAddCable(SelectedPort.Port, uiport.Port);
                 SelectedPort = null;
             }
             SelectedPort = null;
         }
 
+        private float CurrentX = 0;
+        private float CurrentY = 0;
+        public void SwitchRack(AudioRack rack)
+        {
+            SelectedRack = rack;
+            DispatchUpdater(() =>
+            {
+                CurrentX = 0;
+                CurrentY = 0;
+                ModuleContainer.RemoveComponents();
+
+                foreach (var module in rack.Modules)
+                    AddModule(module);
+
+                ModuleContainer.UpdateFrame(); // Calculate Port Positions
+
+                SceneContext.Current.Find<CablesComponent>().First().SetCables(rack.Cables);
+            });
+        }
     }
 }

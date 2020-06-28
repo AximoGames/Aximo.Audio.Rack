@@ -9,5 +9,7 @@ namespace Aximo.Engine.Audio
     {
         ImageContext RegisterCanvas(Vector2 size);
         Vector2 ModuleSize { get; }
+        void SetParameterClickedHandler(Action<AudioParameter> callback);
+        IApplicationInterface Application { get; }
     }
 }

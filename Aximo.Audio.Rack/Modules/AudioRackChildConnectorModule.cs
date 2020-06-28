@@ -12,9 +12,13 @@ namespace Aximo.Engine.Audio.Modules
         internal Port[] InputChannels;
         internal Port[] OutputChannels;
 
+        internal AudioRackParentConnectorModule? Parent;
+
         public AudioRackChildConnectorModule()
         {
             Name = "RackChildConnector";
+
+            ConfigureParameter(0, "SwitchToParent", AudioParameterType.Button, 0, 1, 0);
 
             ConfigureInput(0, "Input1");
             ConfigureInput(1, "Input2");
@@ -37,7 +41,26 @@ namespace Aximo.Engine.Audio.Modules
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public override void Process(AudioProcessArgs e)
         {
-
         }
+
+        public override AudioWidget CreateWidget() => new Widget(this);
+
+        private class Widget : AudioAutoWidget<AudioRackChildConnectorModule>
+        {
+            public Widget(AudioRackChildConnectorModule module) : base(module)
+            {
+            }
+
+            public override void Init()
+            {
+                WidgetInterface.SetParameterClickedHandler((p) =>
+                {
+                    if (p == Module.GetParameter(0) && Module.Parent != null)
+                        WidgetInterface.Application.SwitchRack(Module.Parent.Rack);
+                });
+                base.Init();
+            }
+        }
+
     }
 }

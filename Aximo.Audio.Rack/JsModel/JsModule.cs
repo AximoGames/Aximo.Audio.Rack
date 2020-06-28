@@ -9,5 +9,6 @@ namespace Aximo.Audio.Rack.JsonModel
         public Vector2i Position { get; set; }
         public string Name { get; set; }
         public List<JsParameter> Parameters { get; set; } = new List<JsParameter>();
+        public JsRack SubRack { get; set; }
     }
 }

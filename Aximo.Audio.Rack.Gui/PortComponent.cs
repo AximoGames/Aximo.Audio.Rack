@@ -86,6 +86,8 @@ namespace Aximo.Audio.Rack.Gui
                 bgColor = Color.Yellow.WithAlpha(0.9f);
 
             Color borderColor = Color.Red;
+            if (Port.Direction == PortDirection.Output)
+                borderColor = Color.Black;
 
             ImageContext.Clear(bgColor);
             ImageContext.DrawButton(Border, borderColor);

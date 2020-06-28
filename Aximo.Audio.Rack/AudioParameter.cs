@@ -14,6 +14,7 @@ namespace Aximo.Engine.Audio
         Slider,
         Knob,
         Toggle,
+        Button,
     }
 
     public enum AudioParameterScale

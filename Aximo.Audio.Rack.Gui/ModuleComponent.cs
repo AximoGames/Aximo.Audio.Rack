@@ -1,13 +1,16 @@
 ﻿// This file is part of Aximo, a Game Engine written in C#. Web: https://github.com/AximoGames
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.Linq;
 using System.Reflection;
 using Aximo.Engine;
 using Aximo.Engine.Audio;
 using Aximo.Engine.Components.Geometry;
 using Aximo.Engine.Components.UI;
+using Aximo.Engine.Windows;
 using Aximo.Render.OpenGL;
+using Gtk;
 using OpenToolkit.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -18,7 +21,6 @@ namespace Aximo.Audio.Rack.Gui
 {
     public class ModuleComponent : UIPanelComponent, IWidgetInterface
     {
-
         public const float ModuleHeight = 26.25f;
         private const float ModuleHP = 1f;
         internal AudioModule Module;
@@ -63,6 +65,11 @@ namespace Aximo.Audio.Rack.Gui
                 AddToggle(param);
             }
 
+            foreach (var param in Module.Parameters.Where(p => p.Type == AudioParameterType.Button))
+            {
+                AddButton(param);
+            }
+
             foreach (var port in Module.Outputs)
             {
                 AddPort(port);
@@ -81,6 +88,7 @@ namespace Aximo.Audio.Rack.Gui
         public SceneComponent AddSlider(AudioParameter param)
         {
             var comp = new AudioSliderComponent(param);
+            comp.Click += (e) => ParameterClicked(e, param);
             AddComponent(comp);
             comp.SliderThickness = 2f;
             comp.OuterSize = new Vector2(Size.X, 3);
@@ -99,6 +107,8 @@ namespace Aximo.Audio.Rack.Gui
 
         public Vector2 ModuleSize { get; private set; }
 
+        public IApplicationInterface Application => (RackApplication)Engine.Application.Current;
+
         public SceneComponent AddPort(Port port)
         {
             var comp = new PortComponent(port);
@@ -113,9 +123,36 @@ namespace Aximo.Audio.Rack.Gui
             return comp;
         }
 
+        private Action<AudioParameter> ParameterClickedHandler;
+        public void SetParameterClickedHandler(Action<AudioParameter> callback)
+        {
+            ParameterClickedHandler = callback;
+        }
+
+        private void ParameterClicked(MouseButtonArgs e, AudioParameter param)
+        {
+            ParameterClickedHandler?.Invoke(param);
+        }
+
         public SceneComponent AddToggle(AudioParameter param)
         {
             var comp = new ToggleComponent(param);
+            comp.Click += (e) => ParameterClicked(e, param);
+            AddComponent(comp);
+            comp.Location = CurrentLocation;
+            CurrentLocation.X += comp.OuterSize.X;
+            if (CurrentLocation.X >= Size.X)
+            {
+                CurrentLocation.X = 0;
+                CurrentLocation.Y += comp.OuterSize.Y;
+            }
+            return comp;
+        }
+
+        public SceneComponent AddButton(AudioParameter param)
+        {
+            var comp = new AudioButtonComponent(param);
+            comp.Click += (e) => ParameterClicked(e, param);
             AddComponent(comp);
             comp.Location = CurrentLocation;
             CurrentLocation.X += comp.OuterSize.X;

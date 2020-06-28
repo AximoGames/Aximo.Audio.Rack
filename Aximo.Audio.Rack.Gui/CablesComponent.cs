@@ -38,7 +38,8 @@ namespace Aximo.Engine.Components.Geometry
                 foreach (var port in cable.Ports)
                 {
                     var p = GetPortComponent(port);
-                    vertices.Add(p.AbsoluteCenter.ToVector3(), new Vector4(1, 1, 0, 1));
+                    if (p != null)
+                        vertices.Add(p.AbsoluteCenter.ToVector3(), new Vector4(1, 1, 0, 1));
                 }
             }
 

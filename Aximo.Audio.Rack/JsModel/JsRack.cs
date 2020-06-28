@@ -10,7 +10,8 @@ using OpenToolkit.Mathematics;
 
 namespace Aximo.Audio.Rack.JsonModel
 {
-    public class JsFile
+
+    public class JsRack
     {
         public string Version { get; set; }
         public List<JsModule> Modules { get; set; } = new List<JsModule>();
@@ -53,12 +54,12 @@ namespace Aximo.Audio.Rack.JsonModel
             });
         }
 
-        public static JsFile Parse(string json)
+        public static JsRack Parse(string json)
         {
-            return JsonConvert.DeserializeObject<JsFile>(json);
+            return JsonConvert.DeserializeObject<JsRack>(json);
         }
 
-        public static JsFile LoadFile(string filePath)
+        public static JsRack LoadFile(string filePath)
         {
             return Parse(File.ReadAllText(filePath));
         }

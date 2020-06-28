@@ -16,6 +16,8 @@ namespace Aximo.Engine.Audio.Modules
         {
             Name = "RackParentConnector";
 
+            ConfigureParameter(0, "SwitchToChild", AudioParameterType.Button, 0, 1, 0);
+
             ConfigureInput(0, "Input1");
             ConfigureInput(1, "Input2");
             ConfigureInput(2, "Input3");
@@ -33,13 +35,13 @@ namespace Aximo.Engine.Audio.Modules
             InputChannels = new Port[] { Inputs[0], Inputs[1], Inputs[2], Inputs[3], Inputs[4], Inputs[5], Inputs[6], Inputs[7] };
             OutputChannels = new Port[] { Outputs[0], Outputs[1], Outputs[2], Outputs[3] };
 
-            ChildRack = new AudioRack();
+            var childRack = new AudioRack();
             Child = new AudioRackChildConnectorModule();
-            ChildRack.AddModule(Child);
+            Child.Parent = this;
+            childRack.AddModule(Child);
         }
 
-        private AudioRackChildConnectorModule Child;
-        public AudioRack ChildRack;
+        internal AudioRackChildConnectorModule Child;
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public override void Process(AudioProcessArgs e)
@@ -47,10 +49,29 @@ namespace Aximo.Engine.Audio.Modules
             for (var i = 0; i < InputChannels.Length; i++)
                 Child.OutputChannels[i].SetVoltage(InputChannels[i].GetVoltage());
 
-            ChildRack.Process(e);
+            Child.Rack.Process(e);
 
             for (var i = 0; i < OutputChannels.Length; i++)
                 OutputChannels[i].SetVoltage(Child.InputChannels[i].GetVoltage());
+        }
+
+        public override AudioWidget CreateWidget() => new Widget(this);
+
+        private class Widget : AudioAutoWidget<AudioRackParentConnectorModule>
+        {
+            public Widget(AudioRackParentConnectorModule module) : base(module)
+            {
+            }
+
+            public override void Init()
+            {
+                WidgetInterface.SetParameterClickedHandler((p) =>
+                {
+                    if (p == Module.GetParameter(0))
+                        WidgetInterface.Application.SwitchRack(Module.Child.Rack);
+                });
+                base.Init();
+            }
         }
     }
 }
