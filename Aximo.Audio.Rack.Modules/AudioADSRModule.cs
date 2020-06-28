@@ -15,6 +15,8 @@ namespace Aximo.Engine.Audio.Modules
         private AudioParameter DecayParam;
         private AudioParameter SubstainParam;
         private AudioParameter ReleaseParam;
+        private AudioParameter TriggerParam;
+
         private Port Trigger;
         private Port Volume;
 
@@ -31,6 +33,7 @@ namespace Aximo.Engine.Audio.Modules
             DecayParam = ConfigureParameter(1, "Decay", AudioParameterType.Slider, 0, 1, 0.5f).SetDisplayRangeExp(LamdaBase, 1000);
             SubstainParam = ConfigureParameter(2, "Substain", AudioParameterType.Slider, 0, 1, 0.5f).SetDisplayRangeLinear(0, 100);
             ReleaseParam = ConfigureParameter(3, "Release", AudioParameterType.Slider, 0, 1, 0.5f).SetDisplayRangeExp(LamdaBase, 1000);
+            TriggerParam = ConfigureParameter(4, "Trigger", AudioParameterType.Button, 0, 1, 0f);
 
             Trigger = ConfigureInput(0, "Gate");
             Volume = ConfigureOutput(0, "Out");
@@ -48,7 +51,7 @@ namespace Aximo.Engine.Audio.Modules
             Env.DecayRate = -((1f - Env.SustainLevel) / (44100f / (1000f / MathF.Pow(DecayParam.DisplayBase, DecayParam.GetValue()))));
             Env.ReleaseTime = 44100f / (1000f / MathF.Pow(ReleaseParam.DisplayBase, ReleaseParam.GetValue()));
 
-            Env.Gate(Trigger.GetVoltage() >= 0.9f);
+            Env.Gate(Trigger.GetVoltage() >= 0.9f || TriggerParam.IsToggleUp);
 
             var volume = -Env.Process(out _);
             Volume.SetVoltage(volume * 10f);
