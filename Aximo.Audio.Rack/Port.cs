@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using OpenToolkit.Windowing.Common;
 
 namespace Aximo.Engine.Audio
 {
@@ -49,6 +50,7 @@ namespace Aximo.Engine.Audio
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void SetVoltage(float voltage, int channel = 0)
         {
+            //if (PulseTicks == 0)
             Channels[channel].Voltage = voltage;
         }
 
@@ -56,6 +58,25 @@ namespace Aximo.Engine.Audio
         public float GetVoltage(int channel = 0)
         {
             return Channels[channel].Voltage;
+        }
+
+        private int PulseTicks = 0;
+        public void Pulse(int channel = 0)
+        {
+            SetVoltage(1);
+            PulseTicks = (int)MathF.Round(44100f / 1000f);
+        }
+
+        internal void Process(AudioProcessArgs e)
+        {
+            var pulseTicks = PulseTicks;
+            if (pulseTicks > 0)
+            {
+                pulseTicks--;
+                if (pulseTicks == 0)
+                    SetVoltage(0);
+                PulseTicks = pulseTicks;
+            }
         }
 
         public void AddCable(AudioCable cable)

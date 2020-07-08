@@ -118,6 +118,7 @@ namespace Aximo.Engine.Audio
         public virtual void Process(AudioProcessArgs e)
         {
             ProcessSmoothing(e);
+            ProcessPort(e);
 
             var cables = Cables;
             var len = cables.Length;
@@ -130,17 +131,25 @@ namespace Aximo.Engine.Audio
                 modules[i].Process(e);
         }
 
+        private void ProcessPort(AudioProcessArgs e)
+        {
+            var modules = Modules;
+            var len = modules.Length;
+            for (var i = 0; i < len; i++)
+                modules[i].ProcessPort(e);
+        }
+
         public AudioModule GetModule(string name)
         {
             return Modules.FirstOrDefault(m => m.Name == name);
         }
 
-        public void LoadFromFile(string filePath)
+        public void AppendFromFile(string filePath)
         {
-            LoadFromJson(JsRack.LoadFile(filePath));
+            AppendFromJson(JsRack.LoadFile(filePath));
         }
 
-        public void LoadFromJson(JsRack file)
+        public void AppendFromJson(JsRack file)
         {
             // temporary list to support appending to existing rack
             var modules = new List<AudioModule>();
@@ -162,19 +171,7 @@ namespace Aximo.Engine.Audio
                 AddModule(mod);
 
                 if (mod is AudioRackParentConnectorModule parent)
-                {
-                    if (jsMod.SubRack != null)
-                    {
-                        var childrack = new AudioRack();
-                        childrack.LoadFromJson(jsMod.SubRack);
-                        var childMod = childrack.GetModules<AudioRackChildConnectorModule>().FirstOrDefault();
-                        if (childMod != null)
-                        {
-                            parent.Child = childMod;
-                            childMod.Parent = parent;
-                        }
-                    }
-                }
+                    parent.LoadFromJson(jsMod.SubRack);
             }
 
             foreach (var jsCable in file.Cables)

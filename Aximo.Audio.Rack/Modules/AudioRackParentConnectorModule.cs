@@ -2,7 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Aximo.Audio.Rack.JsonModel;
 
 namespace Aximo.Engine.Audio.Modules
 {
@@ -12,20 +14,24 @@ namespace Aximo.Engine.Audio.Modules
         internal Port[] InputChannels;
         internal Port[] OutputChannels;
 
+        private AudioParameter TriggerParam;
+        private Port Trigger;
+
         public AudioRackParentConnectorModule()
         {
             Name = "RackParentConnector";
 
             ConfigureParameter(0, "SwitchToChild", AudioParameterType.Button, 0, 1, 0);
+            TriggerParam = ConfigureParameter(1, "Trigger", AudioParameterType.Button, 0, 1, 0);
 
-            ConfigureInput(0, "Input1");
-            ConfigureInput(1, "Input2");
-            ConfigureInput(2, "Input3");
-            ConfigureInput(3, "Input4");
-            ConfigureInput(4, "Input5");
-            ConfigureInput(5, "Input6");
-            ConfigureInput(6, "Input7");
-            ConfigureInput(7, "Input8");
+            Trigger = ConfigureInput(0, "Trigger");
+            ConfigureInput(1, "Velocity");
+            ConfigureInput(2, "Input1");
+            ConfigureInput(3, "Input2");
+            ConfigureInput(4, "Input3");
+            ConfigureInput(5, "Input4");
+            ConfigureInput(6, "Input5");
+            ConfigureInput(7, "Input6");
 
             ConfigureOutput(0, "Output1");
             ConfigureOutput(1, "Output2");
@@ -43,16 +49,44 @@ namespace Aximo.Engine.Audio.Modules
 
         internal AudioRackChildConnectorModule Child;
 
+        private bool OldTriggerState;
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public override void Process(AudioProcessArgs e)
         {
+            if (TriggerParam.IsToggleUp != OldTriggerState)
+            {
+                OldTriggerState = TriggerParam.IsToggleUp;
+                if (TriggerParam.IsToggleUp)
+                    Trigger.SetVoltage(TriggerParam.Max);
+                else
+                    Trigger.SetVoltage(TriggerParam.Min);
+            }
+
             for (var i = 0; i < InputChannels.Length; i++)
                 Child.OutputChannels[i].SetVoltage(InputChannels[i].GetVoltage());
+
+            if (Child.TriggerParam.IsToggleUp)
+                Child.Trigger.SetVoltage(Child.TriggerParam.Max);
 
             Child.Rack.Process(e);
 
             for (var i = 0; i < OutputChannels.Length; i++)
                 OutputChannels[i].SetVoltage(Child.InputChannels[i].GetVoltage());
+        }
+
+        public void LoadFromJson(JsRack jsRack)
+        {
+            if (jsRack != null)
+            {
+                var childrack = new AudioRack();
+                childrack.AppendFromJson(jsRack);
+                var childMod = childrack.GetModules<AudioRackChildConnectorModule>().FirstOrDefault();
+                if (childMod != null)
+                {
+                    Child = childMod;
+                    childMod.Parent = this;
+                }
+            }
         }
 
         public override AudioWidget CreateWidget() => new Widget(this);

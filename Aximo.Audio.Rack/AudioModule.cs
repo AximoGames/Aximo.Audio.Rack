@@ -25,6 +25,19 @@ namespace Aximo.Engine.Audio
 
         public string Name;
 
+        internal void ProcessPort(AudioProcessArgs e)
+        {
+            var ports = Inputs;
+            var len = ports.Length;
+            for (var i = 0; i < len; i++)
+                ports[i].Process(e);
+
+            ports = Outputs;
+            len = ports.Length;
+            for (var i = 0; i < len; i++)
+                ports[i].Process(e);
+        }
+
         public abstract void Process(AudioProcessArgs e);
 
         public const int SamplesPerSecond = 44100;
@@ -64,6 +77,11 @@ namespace Aximo.Engine.Audio
         }
 
         public virtual AudioWidget CreateWidget() => new AudioAutoWidget<AudioModule>(this);
+
+        /// <summary>
+        /// Custom Property for the Developer.
+        /// </summary>
+        public object Tag { get; set; }
     }
 
 }

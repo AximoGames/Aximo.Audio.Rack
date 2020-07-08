@@ -211,7 +211,7 @@ namespace Aximo.Audio.Rack.Gui
 
             //Rack.SaveToFile("/tmp/test.json");
             if (File.Exists("/tmp/rack.json"))
-                MainRack.LoadFromFile("/tmp/rack.json");
+                MainRack.AppendFromFile("/tmp/rack.json");
 
             MainRack.StartThread();
             //inMod.Play();
