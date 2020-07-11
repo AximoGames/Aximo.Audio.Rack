@@ -11,7 +11,11 @@
     <Import Project="..\..\props\Nuspec.props" />
     <PropertyGroup>
         <PackageId>Aximo.Audio.Rack</PackageId>
-        <Description>$(DependencyDescription)</Description>
+        <Description>
+            Aximo Audio Rack is an Open Source emulated Analog Modular Audio Engine written purly in C#.
+            Documentation: https://www.aximo.games
+            Source: https://github.com/AximoGames/Aximo.AudioRack
+        </Description>
     </PropertyGroup>
     <Import Project="..\..\props\SharedProjectSettings.props" />
     <ItemGroup>
