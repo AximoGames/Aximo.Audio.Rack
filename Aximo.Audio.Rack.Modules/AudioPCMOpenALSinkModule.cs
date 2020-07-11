@@ -53,9 +53,11 @@ namespace Aximo.Engine.Audio.Modules
                 var url = "https://github.com/AximoGames/Aximo.redist.OpenAL/raw/a0cdf016869c634c054f416989a1fdedf26d16fe/lib/libopenal.so.1.20.1";
                 var fileName = "libopenal.so.1";
                 var binPath = Path.Combine(AssetManager.BinDir, fileName);
-                Log.Info($"Cannot find {fileName}. Downloading {url}");
                 if (!File.Exists(binPath))
+                {
+                    Log.Info($"Cannot find {fileName}. Downloading {url}");
                     new WebClient().DownloadFile(url, binPath);
+                }
             }
         }
 
