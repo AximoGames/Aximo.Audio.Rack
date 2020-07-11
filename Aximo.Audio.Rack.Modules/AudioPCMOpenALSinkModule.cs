@@ -67,7 +67,7 @@ namespace Aximo.Engine.Audio.Modules
             BufferCount = DefaultBufferCount;
 
             Frequency = DefaultFrequency;
-            BufferSize = (int)(((Frequency / 1000f) * BufferSizeMiliseconds) / BufferCount) * Channels;
+            BufferSize = (int)(Frequency / 1000f * BufferSizeMiliseconds / BufferCount) * Channels;
             BufferHandles = new int[BufferCount];
 
             Log.Info("Audio Delay: {delay}, Buffers: {buffers}, Frames per Buffer: {samples}", BufferSizeMiliseconds, BufferCount, BufferSize / 2);

@@ -138,7 +138,7 @@ namespace Aximo.Audio.Rack.Gui
                 CustomOrder = 10,
                 FontSize = 1,
                 Size = new Vector2(10, 10),
-            })); ;
+            }));
 
             SceneContext.AddActor(new Actor(new DirectionalLightComponent()
             {

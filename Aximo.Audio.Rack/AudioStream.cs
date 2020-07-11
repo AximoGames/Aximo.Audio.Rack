@@ -53,7 +53,7 @@ namespace Aximo.Engine.Audio
             Bits = bits_per_sample;
             Rate = sample_rate;
 
-            SampleSizeAllChannels = (bits_per_sample / 8) * Channels;
+            SampleSizeAllChannels = bits_per_sample / 8 * Channels;
             DataStartPosition = Reader.BaseStream.Position; // normally 44
         }
 

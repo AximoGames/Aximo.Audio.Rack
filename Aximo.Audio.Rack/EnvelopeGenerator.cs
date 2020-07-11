@@ -1,10 +1,14 @@
-﻿using System;
+﻿// This file is part of Aximo, a Game Engine written in C#. Web: https://github.com/AximoGames
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Linq;
 
 namespace Aximo.Engine.Audio
 {
     // C# ADSR based on work by Nigel Redmon, EarLevel Engineering: earlevel.com
     // http://www.earlevel.com/main/2013/06/03/envelope-generators-adsr-code/
+
     /// <summary>
     /// Envelope generator (ADSR)
     /// </summary>
@@ -20,29 +24,33 @@ namespace Aximo.Engine.Audio
             /// Idle
             /// </summary>
             Idle = 0,
+
             /// <summary>
             /// Attack
             /// </summary>
             Attack,
+
             /// <summary>
             /// Decay
             /// </summary>
             Decay,
+
             /// <summary>
             /// Sustain
             /// </summary>
             Sustain,
+
             /// <summary>
             /// Release
             /// </summary>
-            Release
-        };
+            Release,
+        }
 
-        float level;
-        EnvelopeState state;
-        bool isReleased;
-        float releaseRate;
-        float interval = 1000f / 44100f;
+        private float level;
+        private EnvelopeState state;
+        private bool isReleased;
+        private float releaseRate;
+        private float interval = 1000f / 44100f;
 
         public void Attack()
         {
@@ -137,7 +145,6 @@ namespace Aximo.Engine.Audio
             }
             return level;
         }
-
 
     }
 }

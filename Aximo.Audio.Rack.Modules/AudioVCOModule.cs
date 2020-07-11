@@ -48,11 +48,11 @@ namespace Aximo.Engine.Audio.Modules
             else
                 freq = FreqParam.GetBipolarMappedValue(freqVC, vcoMin, vcoMax);
 
-            var phaseStep = (1 / (float)44100f) * freq;
+            var phaseStep = 1 / (float)44100f * freq;
             CurrentPhase += phaseStep;
             CurrentPhase = AxMath.Digits(CurrentPhase);
 
-            var v = MathF.Sin((MathF.PI * 2) * CurrentPhase) * 5;
+            var v = MathF.Sin(MathF.PI * 2 * CurrentPhase) * 5;
             SinOut.SetVoltage(v);
         }
     }

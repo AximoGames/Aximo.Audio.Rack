@@ -12,7 +12,7 @@ namespace Aximo.Engine.Audio.Modules
         private Port[] InputChannels;
         private Port[] OutputChannels;
 
-        const float DefaultVolume = 0.5f;
+        private const float DefaultVolume = 0.5f;
 
         public AudioMix4Module()
         {
